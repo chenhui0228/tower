@@ -84,7 +84,12 @@ where
             // poll_closed returns Poll::Ready is the receiver is dropped.
             // Returning Pending means it is still alive, so we should still
             // use it.
-            if msg.tx.poll_closed(cx).is_pending() {
+            // if msg.tx.poll_closed(cx).is_pending() {
+            //     tracing::trace!("resuming buffered request");
+            //     return Poll::Ready(Some((msg, false)));
+            // }
+
+            if !msg.tx.is_closed() {
                 tracing::trace!("resuming buffered request");
                 return Poll::Ready(Some((msg, false)));
             }
@@ -94,7 +99,12 @@ where
 
         // Get the next request
         while let Some(mut msg) = ready!(Pin::new(&mut self.rx).poll_recv(cx)) {
-            if msg.tx.poll_closed(cx).is_pending() {
+            // if msg.tx.poll_closed(cx).is_pending() {
+            //     tracing::trace!("processing new request");
+            //     return Poll::Ready(Some((msg, true)));
+            // }
+
+            if !msg.tx.is_closed() {
                 tracing::trace!("processing new request");
                 return Poll::Ready(Some((msg, true)));
             }
