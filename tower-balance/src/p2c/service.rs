@@ -147,15 +147,22 @@ where
     }
 
     fn promote_pending_to_ready(&mut self, cx: &mut Context<'_>) {
+        trace!(
+            ready = %self.services.ready_len(),
+            pending = %self.services.pending_len(),
+            "IVAN"
+        );
         loop {
             match self.services.poll_pending(cx) {
                 Poll::Ready(Ok(())) => {
                     // There are no remaining pending services.
+                    debug!("IVAN: ready pending_len={}", self.services.pending_len());
                     debug_assert_eq!(self.services.pending_len(), 0);
                     break;
                 }
                 Poll::Pending => {
                     // None of the pending services are ready.
+                    debug!("IVAN: pending_len={}", self.services.pending_len());
                     debug_assert!(self.services.pending_len() > 0);
                     break;
                 }
