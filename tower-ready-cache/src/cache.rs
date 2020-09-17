@@ -231,11 +231,11 @@ where
             match Pin::new(&mut self.pending).poll_next(cx) {
                 Poll::Pending => {
                     trace!("IVAN: ReadyCache poll_pending: Pending, return Poll::Pending");
-                    return Poll::Pending
+                    return Poll::Pending;
                 },
                 Poll::Ready(None) => {
                     trace!("IVAN: ReadyCache poll_pending: Ready(None), return Pool::Ready(Ok(()))");
-                    return Poll::Ready(Ok(()))
+                    return Poll::Ready(Ok(()));
                 },
                 Poll::Ready(Some(Ok((key, svc, cancel_rx)))) => {
                     trace!("endpoint ready");
