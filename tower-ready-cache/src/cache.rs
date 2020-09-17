@@ -229,8 +229,14 @@ where
     pub fn poll_pending(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), error::Failed<K>>> {
         loop {
             match Pin::new(&mut self.pending).poll_next(cx) {
-                Poll::Pending => return Poll::Pending,
-                Poll::Ready(None) => return Poll::Ready(Ok(())),
+                Poll::Pending => {
+                    trace!("IVAN: ReadyCache poll_pending: Pending, return Poll::Pending");
+                    return Poll::Pending
+                },
+                Poll::Ready(None) => {
+                    trace!("IVAN: ReadyCache poll_pending: Ready(None), return Pool::Ready(Ok(()))");
+                    return Poll::Ready(Ok(()))
+                },
                 Poll::Ready(Some(Ok((key, svc, cancel_rx)))) => {
                     trace!("endpoint ready");
                     let cancel_tx = self.pending_cancel_txs.swap_remove(&key);
